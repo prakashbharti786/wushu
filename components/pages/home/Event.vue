@@ -1,7 +1,10 @@
 <template>
   <div class="md-row">
     <div class="md-col md-col--12 md-mb-3">
-      <div class="md-banner md-bg-warning md-banner--vertical">
+      <div
+        class="md-banner md-bg-warning md-banner--vertical"
+        style="border-radius: 4px"
+      >
         <div class="md-banner__body">
           <span class="md-banner__icon md-text-warning">
             <i class="material-icons">lock_open</i>

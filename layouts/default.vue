@@ -150,9 +150,9 @@ process
 .md-dialog--full-screen .md-dialog__surface {
   --dialog-border-radius: 0;
   width: 100vw;
-  max-width: none;
+  max-width: 100%;
   height: 100vh;
-  max-height: none;
+  max-height: 100%;
 }
 @media (max-width: 640px) {
   .expand-on-sm {

@@ -23,7 +23,7 @@
             icon="close"
           />
         </div>
-        <div class="md-dialog__header-title">Sign in</div>
+        <div class="md-dialog__header-title">Member Login</div>
         <div
           v-if="enableFullScreen"
           class="md-dialog__header-action-affirmative"

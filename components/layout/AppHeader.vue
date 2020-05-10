@@ -25,7 +25,7 @@
         </div>
         <div v-else="" class="md-top-app-bar__toolbar">
           <MdButton
-            label="Sign in"
+            label="Member Log in"
             theme="primary"
             :outlined="true"
             @click="login"

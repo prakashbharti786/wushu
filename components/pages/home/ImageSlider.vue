@@ -8,7 +8,7 @@
         <div
           v-for="item in 6"
           :key="'fev-image' + item"
-          class="swiper-slide swiper-slide--rex pmh-blog__posts md-my-2 md-mx-2"
+          class="swiper-slide swiper-slide--rex pmh-blog__posts"
         >
           <div
             class="swiper-image"
@@ -22,9 +22,10 @@
 
 <style>
 .swiper-image {
+  max-width: 100%;
   width: 420px;
   height: 420px;
-  background-size: cover;
+  background-size: auto 100%;
   background-position: center;
 }
 </style>
