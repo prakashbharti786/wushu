@@ -102,7 +102,7 @@ import ViewEntry from '@/components/ViewEntry'
 
 export default {
   components: { ViewEntry, IndividualEntry },
-  // middleware: 'auth',
+  middleware: 'auth',
   data: () => ({
     assetsUrl: process.env.assetsUrl,
     individualEntryDialogToggle: false,
