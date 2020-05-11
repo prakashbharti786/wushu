@@ -76,7 +76,7 @@
                 ref="father_name"
                 class="md-flex--grow"
                 :required="true"
-                :value="convertDate(inputs.dob)"
+                :value="inputs.dob"
                 :error-text="errors.dob"
                 :invalid="!!errors.dob"
                 type="date"
@@ -222,6 +222,7 @@ export default {
   methods: {
     open(item) {
       this.inputs = JSON.parse(JSON.stringify(item))
+      this.inputs.dob = this.convertDate(this.inputs.dob)
       this.$emit('update:show', true)
     },
     onClosing() {

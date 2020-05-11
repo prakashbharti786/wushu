@@ -2,7 +2,13 @@ import findObjectIndex from '@/assets/js/helper'
 
 const defaultFormsState = () => {
   return {
-    data: []
+    data: [],
+    pagination: {
+      lastPage: 1,
+      page: 1,
+      perPage: 10,
+      total: 0
+    }
   }
 }
 export default {
@@ -34,15 +40,22 @@ export default {
       const index = findObjectIndex(state.data, data)
       commit('updateData', { data, index })
     },
-    async index({ commit }) {
-      const { data } = await this.$axios.get(`forms`)
-      commit('setData', { name: 'data', data })
+    async index({ commit }, obj) {
+      const { data } = await this.$axios.get(`forms`, { params: obj })
+      const listItem = data.data
+      const pagination = data
+      commit('setData', { name: 'data', data: listItem })
+      delete pagination.data
+      commit('setData', { name: 'pagination', data: pagination })
     }
   },
 
   getters: {
     getData(state) {
       return state.data
+    },
+    getPagination(state) {
+      return state.pagination
     }
   }
 }

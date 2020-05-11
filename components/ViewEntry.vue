@@ -38,7 +38,26 @@
         </div>
       </template>
       <template>
-        <div>prakash</div>
+        <div v-if="inputs.id" class="md-form">
+          <div
+            v-for="item in viewConfigList"
+            :key="item.key"
+            class="md-form__row"
+          >
+            <div class="md-form__item">
+              <div class="md-typography-caption">
+                {{ item.label }}
+              </div>
+              <div class="md-typography-body1">
+                {{
+                  item.key === 'dob'
+                    ? convertDate(inputs[item.key])
+                    : inputs[item.key]
+                }}
+              </div>
+            </div>
+          </div>
+        </div>
       </template>
       <template slot="footer">
         <div class="md-flex-grow-1"></div>
@@ -63,8 +82,41 @@ export default {
   data: () => ({
     loading: false,
     windowWidth: null,
-    baseUrl: process.env.baseUrl,
-    apiUrl: process.env.apiUrl
+    inputs: {},
+    viewConfigList: [
+      {
+        label: 'Name',
+        key: 'name'
+      },
+      {
+        label: 'Father name',
+        key: 'father_name'
+      },
+      {
+        label: 'Mobile',
+        key: 'mobile'
+      },
+      {
+        label: 'DOB',
+        key: 'dob'
+      },
+      {
+        label: 'district',
+        key: 'district'
+      },
+      {
+        label: 'Aadhaar no',
+        key: 'aadhaar_no'
+      },
+      {
+        label: 'Event',
+        key: 'event'
+      },
+      {
+        label: 'Category',
+        key: 'category'
+      }
+    ]
   }),
   computed: {
     enableFullScreen() {
@@ -85,7 +137,7 @@ export default {
       this.$emit('update:show', true)
     },
     convertDate(date) {
-      return materialDate(date, false, 'YYYY-MM-DD')
+      return materialDate(date, false)
     },
     changeWidth() {
       this.windowWidth = window.innerWidth

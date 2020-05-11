@@ -24,14 +24,6 @@
           />
         </div>
         <div class="md-dialog__header-title">Login</div>
-        <div
-          v-if="enableFullScreen"
-          class="md-dialog__header-action-affirmative"
-        >
-          <MdButton :outlined="true" class="md-button--light">
-            <span class="md-button__label">Submit</span>
-          </MdButton>
-        </div>
       </template>
       <template>
         <div class="et-login-wrapper">
@@ -116,8 +108,7 @@ export default {
     },
     icon: 'visibility',
     passwordType: 'password',
-    loading: false,
-    windowWidth: null
+    loading: false
   }),
   computed: {
     enableSubmit() {
@@ -129,24 +120,13 @@ export default {
     },
     getQueryString() {
       return this.$route.fullPath.substring(this.$route.path.length)
-    },
-    enableFullScreen() {
-      return this.windowWidth < 959
     }
-  },
-  mounted() {
-    this.windowWidth = window.innerWidth
-    window.addEventListener('resize', this.changeWidth)
   },
   beforeDestroy() {
     this.loading = false
     this.$store.commit('core/setAppLoading', false)
-    window.removeEventListener('resize', this.changeWidth)
   },
   methods: {
-    changeWidth() {
-      this.windowWidth = window.innerWidth
-    },
     onInput(val, key) {
       this.$set(this.inputs, key, val)
     },

@@ -6,10 +6,12 @@
       <div class="md-row">
         <div class="md-col md-col--12">
           <div class="md-panel cp-animate cp-animate--fade-up">
-            <header class="md-panel__header">
-              <div class="md-panel__header-title md-typography-medium">
+            <header class="md-panel__header md-border-bottom">
+              <div class="md-top-app-bar__title md-pl-1 md-d-none md-d-flex-sm">
                 User List
               </div>
+              <div class="md-flex-grow-1"></div>
+              <MdButton label="Download CSV" @click="onCSVDownload" />
             </header>
             <div
               style="overflow-x: auto;width: 100%;"
@@ -76,7 +78,14 @@
                 </tbody>
               </table>
             </div>
-            <footer class="md-panel__body"></footer>
+            <footer class="md-panel__footer">
+              <pagination
+                :per-page="pagination.perPage"
+                :page="pagination.page"
+                :total="parseInt(getPagination.total)"
+                @pageChanged="onPageChanged"
+              />
+            </footer>
           </div>
         </div>
       </div>
@@ -99,45 +108,63 @@
 import { mapGetters } from 'vuex'
 import IndividualEntry from '@/components/IndividualEntry'
 import ViewEntry from '@/components/ViewEntry'
+import Pagination from '@/components/common/Pagination'
 
 export default {
-  components: { ViewEntry, IndividualEntry },
+  components: { Pagination, ViewEntry, IndividualEntry },
   middleware: 'auth',
   data: () => ({
     assetsUrl: process.env.assetsUrl,
     individualEntryDialogToggle: false,
     viewEntryDialogToggle: false,
-    isFetching: true
+    isFetching: true,
+    pagination: {
+      page: 1,
+      perPage: 10
+    }
   }),
   computed: {
     ...mapGetters({
-      itemList: 'forms/getData'
+      itemList: 'forms/getData',
+      getPagination: 'forms/getPagination'
     }),
     enableList() {
       return this.itemList.length
     }
   },
   mounted() {
-    if (!(this.itemList && this.itemList.length > 1)) {
-      this.fetchForms()
-    } else {
-      this.isFetching = false
-    }
+    this.fetchForms(this.pagination)
     this.$store.commit('core/setData', {
       name: 'topAppBarTitle',
       data: 'Our blog'
     })
   },
+  beforeDestroy() {
+    this.$store.commit('core/setAppLoading', false)
+  },
   methods: {
-    async fetchForms() {
-      this.isFetching = true
+    async onCSVDownload() {
+      const { data } = await this.$axios.get(`forms/getreports`)
+      const dlink = document.createElement('a')
+      dlink.download = 'data.csv'
+      dlink.target = '_blank'
+      dlink.href = data
+      dlink.click()
+      dlink.remove()
+    },
+    onPageChanged(page) {
+      this.pagination.page = page
+      this.fetchForms(this.pagination)
+    },
+    async fetchForms(pagination) {
+      this.$store.commit('core/setAppLoading', true)
       try {
-        await this.$store.dispatch('forms/index')
+        await this.$store.dispatch('forms/index', pagination)
       } catch (e) {
         // eslint-disable-next-line no-console
         console.log(e)
       }
-      this.isFetching = false
+      this.$store.commit('core/setAppLoading', false)
     },
     updateItem(item) {
       this.$refs.individualEntry.open(item)
