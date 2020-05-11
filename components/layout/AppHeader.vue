@@ -7,7 +7,7 @@
   >
     <div class="md-container md-container--gutter-24-md md-container--gutter">
       <div class="md-top-app-bar__row md-align-items-center">
-        <a href="/" class="md-top-app-bar__brand nuxt-link-exact-active">
+        <nuxt-link to="/" class="md-top-app-bar__brand nuxt-link-exact-active">
           <img
             alt="Fitmetix logo"
             aria-hidden="true"
@@ -15,17 +15,23 @@
             src="/logo.jpg"
             class="gb_0a gb_Fe"
           />
-        </a>
+        </nuxt-link>
         <div class="md-top-app-bar__title md-d-none md-d-flex-sm">
           Bihar Wushu Association
         </div>
         <div class="md-flex-grow-1" />
         <div v-if="isAuthenticated" class="md-top-app-bar__toolbar">
-          <MdButton label="Log out" theme="primary" @click="logout" />
-        </div>
-        <div v-else="" class="md-top-app-bar__toolbar">
+          <MdButton label="Dashboard" theme="primary" @click="goToDashboard" />
           <MdButton
-            label="Member Log in"
+            label="Log out"
+            :outlined="true"
+            theme="primary"
+            @click="logout"
+          />
+        </div>
+        <div v-else class="md-top-app-bar__toolbar">
+          <MdButton
+            label="Log in"
             theme="primary"
             :outlined="true"
             @click="login"
@@ -61,6 +67,9 @@ export default {
     }
   },
   methods: {
+    goToDashboard() {
+      this.$router.push('/dashboard')
+    },
     logout() {
       this.$store.dispatch('auth/logout')
     },

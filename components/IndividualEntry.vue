@@ -5,6 +5,7 @@
       :show="show"
       :close-on-button-click="false"
       :close-on-backdrop-click="false"
+      :close-on-scrim-click="false"
       :class="{
         'md-dialog--full-screen': enableFullScreen,
         'md-dialog--lg': !enableFullScreen
@@ -12,6 +13,7 @@
       class="md-dialog--pp"
       @update:show="$emit('update:show', $event)"
       @MDDialog:action="handleAction"
+      @MDDialog:closing="onClosing"
     >
       <template slot="header">
         <div
@@ -133,12 +135,29 @@
             </div>
             <div class="md-form__row">
               <MdTextField
-                ref="aadhaar_no"
+                ref="category"
+                class="md-flex--grow"
+                :required="true"
+                :value="inputs.category"
+                :error-text="errors.category"
+                :invalid="!!errors.category"
+                :maxlength="50"
+                type="text"
+                uid="category"
+                label="Category"
+                name="category"
+                @input="onInput($event, 'category')"
+              />
+            </div>
+            <div class="md-form__row">
+              <MdTextField
+                ref="event"
                 class="md-flex--grow"
                 :required="true"
                 :value="inputs.event"
                 :error-text="errors.event"
                 :invalid="!!errors.event"
+                :maxlength="50"
                 type="text"
                 uid="event"
                 label="Event"
@@ -161,7 +180,7 @@
           :outlined="true"
           data-md-dialog-action="accept"
         >
-          Submit
+          {{ inputs.id ? 'Update' : 'Submit' }}
         </MdButton>
       </template>
     </MdDialog>
@@ -179,20 +198,12 @@ export default {
     }
   },
   data: () => ({
-    inputs: {
-      name: '',
-      father_name: '',
-      dob: '',
-      aadhaar_no: '',
-      mobile: '',
-      district: '',
-      event: '',
-      category: '',
-      picture: ''
-    },
+    inputs: {},
     errors: {},
     loading: false,
-    windowWidth: null
+    windowWidth: null,
+    baseUrl: process.env.baseUrl,
+    apiUrl: process.env.apiUrl
   }),
   computed: {
     enableFullScreen() {
@@ -209,6 +220,14 @@ export default {
     window.removeEventListener('resize', this.changeWidth)
   },
   methods: {
+    open(item) {
+      this.inputs = JSON.parse(JSON.stringify(item))
+      this.$emit('update:show', true)
+    },
+    onClosing() {
+      this.inputs = {}
+      this.resetErrors()
+    },
     convertDate(date) {
       return materialDate(date, false, 'YYYY-MM-DD')
     },
@@ -244,11 +263,12 @@ export default {
       this.loading = true
       this.$store.commit('core/setAppLoading', true)
       try {
-        const data = await this.$store.dispatch('auth/signIn', {
-          email: this.inputs.email.trim(),
-          password: this.inputs.password
-        })
-        this.$emit('signinSuccess', data)
+        if (this.inputs.id) {
+          await this.$store.dispatch('forms/update', this.inputs)
+        } else {
+          await this.$axios.$post('forms', this.inputs)
+        }
+        this.$emit('update:show', false)
       } catch (e) {
         this.handleError(e)
       }

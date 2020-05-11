@@ -34,9 +34,6 @@ export default {
         name: 'Taolu uniform is must during the performance of event.'
       },
       {
-        name: 'Taichiquan, Taichijian (All category Sub-Jr to Senior)'
-      },
-      {
         name:
           'Athlete must show their name and event name on the paper before starting the event.'
       },
@@ -46,7 +43,7 @@ export default {
       },
       {
         name:
-          'Athlete should have enough space here he/she can perform event smoothly.'
+          'Athlete should have enough space where he/she can perform event smoothly.'
       }
     ]
   })

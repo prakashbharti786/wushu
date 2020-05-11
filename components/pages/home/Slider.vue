@@ -95,22 +95,22 @@ export default {
       {
         name: 'Bhupendra Singh Bajwa',
         position: 'President, Wushu Association of India',
-        img: '/person.jpg'
+        img: '/images/bhupendra.jpeg'
       },
       {
         name: 'Jitendra Singh Bajwa',
         position: 'General Secretary, Bihar Wushu Association',
-        img: '/person.jpg'
+        img: '/images/jitendra.jpeg'
       },
       {
         name: 'Suhel Ahmad',
         position: 'CEO - Wushu Association of India',
-        img: '/person.jpg'
+        img: '/images/suhel.jpeg'
       },
       {
         name: 'Dinesh Kr. Mishra',
-        position: 'General Secretary, Wushu Association of India',
-        img: '/person.jpg'
+        position: 'General Secretary, Bihar Wushu Association',
+        img: '/images/dinesh.jpeg'
       }
     ]
   }),

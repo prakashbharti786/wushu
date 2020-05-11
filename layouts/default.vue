@@ -183,7 +183,9 @@ export default {
       appLoading: 'core/appLoading'
     })
   },
-  mounted() {},
+  mounted() {
+    console.log(process.env.apiUrl)
+  },
   methods: {
     drawerToggle() {
       this.show = !this.show

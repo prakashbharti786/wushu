@@ -1,3 +1,4 @@
+require('dotenv').config()
 export default {
   mode: 'universal',
 
@@ -17,7 +18,7 @@ export default {
       {
         hid: 'description',
         name: 'description',
-        content: process.env.npm_package_description || ''
+        content: 'Bihar State Online Wushu Taolu Championship 2020'
       },
       {
         name: 'keywords',
@@ -55,7 +56,7 @@ export default {
   plugins: [
     '~plugins/global-components.js',
     '~plugins/vue-material.js',
-    '~/plugins/http',
+    '~/plugins/axios.js',
     { src: '~/plugins/vuebar.js', ssr: false },
     { src: '~/plugins/vue-awesome-swiper.js', ssr: false },
     { src: '~/plugins/sw.js', ssr: false }

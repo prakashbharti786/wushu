@@ -3,17 +3,32 @@ import Vue from 'vue'
 const cookieparser = process.server ? require('cookieparser') : undefined
 const Cookie = process.client ? require('js-cookie') : undefined
 
-export default {
-  namespaced: true,
+// eslint-disable-next-line no-unused-vars
+const dateDiffDays = (date1, date2) => {
+  const dt1 = new Date(date1)
+  const dt2 = new Date(date2)
+  return Math.floor(
+    (Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) -
+      Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) /
+      (1000 * 60 * 60 * 24)
+  )
+}
 
-  state: {
+const defaultAuthState = () => {
+  return {
     user: {},
     token: {
       token: null,
       refreshToken: null,
       expiresIn: null
     }
-  },
+  }
+}
+
+export default {
+  namespaced: true,
+
+  state: defaultAuthState,
 
   mutations: {
     setData(state, obj) {
@@ -27,6 +42,9 @@ export default {
     },
     deleteData(state, obj) {
       state[obj.key].splice(obj.index, 1)
+    },
+    resetState(state) {
+      Object.assign(state, defaultAuthState())
     }
   },
 
@@ -52,6 +70,22 @@ export default {
       })
     },
 
+    async signIn({ commit, state, dispatch }, obj) {
+      const data = await this.$axios.$post('signin', obj)
+      const returnData = data
+      dispatch('authenticateUser', data.token)
+      delete data.token
+      commit('setData', { data, name: 'user' })
+      return returnData
+    },
+
+    async signUp({ commit, state, dispatch }, obj) {
+      const data = await this.$axios.$post('signup', obj)
+      dispatch('authenticateUser', data.token)
+      delete data.token
+      commit('setData', { data, name: 'user' })
+    },
+
     initAuth({ state, commit, dispatch }, req) {
       let token, refreshToken
       if (req.headers.cookie) {
@@ -68,16 +102,16 @@ export default {
           key: 'refreshToken',
           data: refreshToken
         })
-        commit('setObjData', {
-          name: 'token',
-          key: 'refreshToken',
-          data: refreshToken
-        })
       }
     },
 
     logout({ commit, dispatch }) {
       commit('setObjData', { name: 'token', key: 'token', data: null })
+      commit('setObjData', {
+        name: 'token',
+        key: 'refreshToken',
+        data: null
+      })
       if (process.client) {
         Cookie.remove('jwt', { domain: process.env.domain })
         Cookie.remove('refreshToken', { domain: process.env.domain })
@@ -90,12 +124,18 @@ export default {
       commit('setData', { data, name: 'user' })
     },
 
-    resetAll() {}
+    resetAll({ commit }) {
+      commit('resetState')
+      if (process.client) {
+        this.commit('core/resetState')
+        this.commit('forms/resetState')
+      }
+    }
   },
 
   getters: {
     isAuthenticated(state) {
-      return state.token.token != null
+      return !!state.token.token
     },
     token(state) {
       return state.token.token

@@ -23,7 +23,7 @@
             icon="close"
           />
         </div>
-        <div class="md-dialog__header-title">Member Login</div>
+        <div class="md-dialog__header-title">Login</div>
         <div
           v-if="enableFullScreen"
           class="md-dialog__header-action-affirmative"
@@ -181,6 +181,7 @@ export default {
           password: this.inputs.password
         })
         this.$emit('signinSuccess', data)
+        this.$emit('update:show', false)
       } catch (e) {
         this.handleError(e)
       }
