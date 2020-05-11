@@ -5,24 +5,13 @@
       :show="show"
       :close-on-button-click="false"
       :class="{
-        'md-dialog--full-screen': enableFullScreen,
-        'md-dialog--lg': !enableFullScreen
+        'md-dialog--lg': true
       }"
       class="md-dialog--pp"
       @update:show="$emit('update:show', $event)"
       @MDDialog:action="handleAction"
     >
       <template slot="header">
-        <div
-          v-if="enableFullScreen"
-          class="md-dialog__header-action-dismissive"
-        >
-          <MdIconButton
-            class="md-icon-button--light"
-            data-md-dialog-action="close"
-            icon="close"
-          />
-        </div>
         <div class="md-dialog__header-title">Login</div>
       </template>
       <template>

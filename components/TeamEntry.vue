@@ -11,6 +11,7 @@
       class="md-dialog--pp"
       @update:show="$emit('update:show', $event)"
       @MDDialog:action="handleAction"
+      @MDDialog:closing="onClosing"
     >
       <template slot="header">
         <div
@@ -44,9 +45,11 @@
               <b>Note:</b> Required fields are First Name, Surname, Email
               Address, Password and Org Unit Path.
             </p>
-            <div class="">
+            <div v-if="!file">
               <button
+                type="button"
                 class="md-button md-button--large md-button--raised md-radio--primary"
+                @click="onUploadClick"
               >
                 <i class="md-button__icon md-button__icon--right material-icons"
                   >publish</i
@@ -54,6 +57,18 @@
                 Attach CSV
               </button>
             </div>
+            <div v-else class="md-d-flex md-align-items-center">
+              <div class="">{{ file.name }}</div>
+              <MdIconButton @click="onDeleteFile" icon="delete"></MdIconButton>
+            </div>
+            <input
+              required
+              ref="file"
+              class="hidden-file-input"
+              type="file"
+              accept=".csv"
+              @change="fileSelected"
+            />
             <div class="md-mt-2">
               <p class="md-typography-black">
                 Not sure how to get started?
@@ -62,15 +77,18 @@
                 Download a CSV file, then edit and upload the file.
               </p>
               <div class="md-typography-subtitle1">
-                Download blank<a
+                Download blank
+                <button
+                  type="button"
                   class="md-button md-button--primary md-button--compact"
+                  @click="downloadSampleCsv"
                 >
                   <i
                     class="md-button__icon md-button__icon--right material-icons"
                     >get_app</i
                   >
-                  CSV Template</a
-                >
+                  CSV Template
+                </button>
               </div>
             </div>
             <input type="reset" class="no-render no-render--reset" />
@@ -95,7 +113,11 @@
     </MdDialog>
   </div>
 </template>
-
+<style>
+.hidden-file-input {
+  visibility: hidden;
+}
+</style>
 <script>
 export default {
   name: 'TeamEntry',
@@ -117,18 +139,12 @@ export default {
     icon: 'visibility',
     passwordType: 'password',
     loading: false,
-    windowWidth: null
+    windowWidth: null,
+    file: null
   }),
   computed: {
     enableSubmit() {
-      return (
-        this.inputs.email &&
-        this.validEmail(this.inputs.email) &&
-        this.inputs.password.length > 5
-      )
-    },
-    getQueryString() {
-      return this.$route.fullPath.substring(this.$route.path.length)
+      return this.file
     },
     enableFullScreen() {
       return this.windowWidth < 959
@@ -144,43 +160,46 @@ export default {
     window.removeEventListener('resize', this.changeWidth)
   },
   methods: {
+    onDeleteFile() {
+      this.file = null
+    },
     changeWidth() {
       this.windowWidth = window.innerWidth
     },
     onInput(val, key) {
       this.$set(this.inputs, key, val)
     },
-    changeType() {
-      if (this.passwordType === 'password') {
-        this.passwordType = 'text'
-        this.icon = 'visibility_off'
-      } else {
-        this.passwordType = 'password'
-        this.icon = 'visibility'
-      }
-    },
-    validEmail(email) {
-      // eslint-disable-next-line no-useless-escape
-      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      return re.test(email)
+    onClosing() {
+      this.file = null
+      this.resetErrors()
     },
     resetErrors() {
       this.$set(this.errors, 'password', null)
       this.$set(this.errors, 'email', null)
     },
+    fileSelected() {
+      this.file = this.$refs.file.files[0]
+    },
+    onUploadClick() {
+      this.$refs.file.click()
+    },
     async onSubmit() {
       this.resetErrors()
+      const fd = new FormData()
+      fd.append('file', this.file)
       if (this.loading) {
         return false
       }
       this.loading = true
       this.$store.commit('core/setAppLoading', true)
       try {
-        const data = await this.$store.dispatch('auth/signIn', {
-          email: this.inputs.email.trim(),
-          password: this.inputs.password
+        await this.$axios.$post('/bulk-upload', fd, {
+          headers: {
+            'content-type': 'multipart/form-data'
+          }
         })
-        this.$emit('signinSuccess', data)
+        alert('Submitted successfully!')
+        this.$emit('update:show', false)
       } catch (e) {
         this.handleError(e)
       }
@@ -217,6 +236,13 @@ export default {
     },
     onSubmitClick() {
       document.querySelector('.no-render--submit').click()
+    },
+    downloadSampleCsv() {
+      const link = document.createElement('a')
+      link.href = window.origin + '/sample.csv'
+      link.setAttribute('download', 'sample.csv')
+      document.body.appendChild(link)
+      link.click()
     }
   }
 }

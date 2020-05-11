@@ -238,20 +238,6 @@ export default {
     onInput(val, key) {
       this.$set(this.inputs, key, val)
     },
-    changeType() {
-      if (this.passwordType === 'password') {
-        this.passwordType = 'text'
-        this.icon = 'visibility_off'
-      } else {
-        this.passwordType = 'password'
-        this.icon = 'visibility'
-      }
-    },
-    validEmail(email) {
-      // eslint-disable-next-line no-useless-escape
-      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      return re.test(email)
-    },
     resetErrors() {
       this.$set(this.errors, 'password', null)
       this.$set(this.errors, 'email', null)
@@ -268,6 +254,7 @@ export default {
           await this.$store.dispatch('forms/update', this.inputs)
         } else {
           await this.$axios.$post('forms', this.inputs)
+          alert('Submitted successfully!')
         }
         this.$emit('update:show', false)
       } catch (e) {
